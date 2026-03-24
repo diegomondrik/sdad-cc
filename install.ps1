@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # G7 SDAD-CC v2.0 - Installer for Windows
 # Spec-Driven AI Development for Claude Code
 # https://github.com/diegomondrik/sdad-cc
@@ -264,3 +264,4 @@ Show-PreferencesInstructions
 Show-ExternalSkills
 Show-Verification
 Show-Summary
+
