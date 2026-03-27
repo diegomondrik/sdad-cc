@@ -43,37 +43,19 @@ The installer will:
 
 ---
 
-## Update an existing install
-
-When a new version of SDAD-CC is released, users can update without reinstalling:
-
-### Mac / Linux
-```bash
-curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/install.sh | bash -s -- --update
-```
-
-### Windows (PowerShell)
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1" --update
-```
-
-The `--update` flag compares your local `.sdad/version.json` against the remote `version.json`. If a newer version exists it re-downloads `CLAUDE.md` and updates your local version file. If already up to date it exits cleanly.
-
----
-
 ## Start a new project
 
 After installing the methodology, initialize each new repo:
 
 ### Mac / Linux
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit/project-init.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/project-init.sh)
 ```
 
 ### Windows (PowerShell)
 ```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit/project-init.ps1" -OutFile "project-init.ps1"
-powershell -ExecutionPolicy Bypass -File ".\project-init.ps1"
+$init = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/project-init.ps1" -UseBasicParsing).Content
+Invoke-Expression $init
 ```
 
 The project initializer verifies SDAD-CC is installed (runs the methodology installer
@@ -93,14 +75,16 @@ claude                       # terminal 2
 
 ## What gets installed
 
-`install.sh` / `install.ps1` creates:
-
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Core instructions — Claude Code reads this automatically. All skills are embedded here. |
-| `.sdad/version.json` | Tracks the installed SDAD-CC version for future `--update` checks |
+| `CLAUDE.md` | Core instructions — Claude Code reads this automatically |
+| `SKILL_SDAD_METHODOLOGY.md` | Full phase logic, QA rules, compliance tiers |
+| `SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM integration patterns |
+| `SKILL_AI_ENGINEER.md` | Implementation quality, tooling, UI detection, docs |
+| `SKILL_COMPLIANCE.md` | 3-tier compliance system (Standard / Business / Enterprise) |
+| `LESSON_LIBRARY.md` | Team knowledge file — grows automatically with use |
 
-`project-init.sh` / `project-init.ps1` also creates:
+Project initializer also creates:
 
 | File / Folder | Purpose |
 |--------------|---------|
@@ -217,7 +201,7 @@ npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill cont
 |------|----------|
 | `SDAD_CC_INSTALL_GUIDE_v3_0.md` | Full installation guide including manual steps and antivirus notes |
 | `SDAD_CC_USAGE_AND_SHORTCUTS_v3_0.md` | All commands, phases, context budget, and best practices |
-| `SDAD_CC_TRAINING_AND_PODCAST_v2_0.md` | Training material + NotebookLM prompts |
+| `SDAD_CC_TRAINING_AND_PODCAST_v3_0.md` | Training material + NotebookLM prompts |
 
 ---
 
@@ -227,40 +211,19 @@ npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill cont
 sdad-cc/
 ├── install.sh                            # Mac/Linux methodology installer
 ├── install.ps1                           # Windows methodology installer
-├── version.json                          # Current methodology version (bump on every release)
+├── project-init.sh                       # Mac/Linux project initializer
+├── project-init.ps1                      # Windows project initializer
 ├── README.md                             # This file
-└── kit/                                  # SDAD-CC v3.0 files (served via raw GitHub URLs)
-    ├── project-init.sh                   # Mac/Linux project initializer
-    ├── project-init.ps1                  # Windows project initializer
-    ├── SDAD_CC_CLAUDE_MD_v3_0.md         # Core methodology — all skills embedded
+└── kit/                                  # SDAD-CC v3.0 files
+    ├── SDAD_CC_CLAUDE_MD_v3_0.md
+    ├── SDAD_CC_SKILL_SDAD_METHODOLOGY_v3_0.md
+    ├── SDAD_CC_SKILL_AI_ARCHITECT_v3_0.md
+    ├── SDAD_CC_SKILL_AI_ENGINEER_v3_0.md
+    ├── SDAD_CC_SKILL_COMPLIANCE_v3_0.md
+    ├── SDAD_CC_LESSON_LIBRARY_v3_0.md
     ├── SDAD_CC_INSTALL_GUIDE_v3_0.md
     ├── SDAD_CC_USAGE_AND_SHORTCUTS_v3_0.md
-    ├── SDAD_CC_README_v3_0.md
-    └── SDAD_CC_TRAINING_AND_PODCAST_v2_0.md
-```
-
----
-
-## Maintainer release workflow
-
-When releasing a new version of SDAD-CC:
-
-1. **Update kit files** — edit `kit/SDAD_CC_CLAUDE_MD_v3_0.md` (and any other files)
-2. **Bump `version.json`** in the repo root:
-```json
-{
-  "version": "3.1.0",
-  "released": "YYYY-MM-DD"
-}
-```
-3. **Push to GitHub** — that's it. No build step needed.
-4. Users run the update command and get the new files automatically:
-```bash
-# Mac/Linux
-curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/install.sh | bash -s -- --update
-
-# Windows
-powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1" --update
+    └── SDAD_CC_TRAINING_AND_PODCAST_v3_0.md
 ```
 
 ---

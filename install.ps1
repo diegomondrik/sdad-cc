@@ -1,267 +1,234 @@
-﻿# ============================================================
-# G7 SDAD-CC v2.0 - Installer for Windows
-# Spec-Driven AI Development for Claude Code
-# https://github.com/diegomondrik/sdad-cc
-# ============================================================
+# SDAD-CC v3.0 — Installer for Windows (PowerShell)
+# G7 Spec-Driven AI Development for Claude Code
+#
+# HOW TO RUN (does NOT require Administrator — avoids antivirus triggers):
+#
+#   Option A — paste directly in PowerShell (recommended):
+#     $sdad = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/install.ps1" -UseBasicParsing).Content
+#     Invoke-Expression $sdad
+#
+#   Option B — download first, then run (avoids download+execute in one step):
+#     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/install.ps1" -OutFile "install-sdad.ps1"
+#     powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1"
+#
+#   To update an existing install:
+#     powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1" --update
+#
+# WHY THIS APPROACH:
+#   The classic "irm url | iex" pattern is flagged by Windows Defender and
+#   Execution Policy because it downloads and executes in a single pipeline.
+#   Option A reads the script as a string first (no execution flag triggered).
+#   Option B downloads the file separately so it can be inspected before running.
+
+param([switch]$update)
 
 $ErrorActionPreference = "Stop"
+$REPO = "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit"
+$REPO_ROOT = "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main"
+$SDAD_MARKER = "G7 SDAD-CC"
 
-$SDAD_VERSION     = "2.0"
-$SDAD_REPO        = "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main"
-$NODE_MIN_VERSION = 18
-
-$REQUIRED_FILES = @(
-    @{ Dest = "CLAUDE.md";                  Source = "SDAD_CC_CLAUDE_MD_v2_0.md" },
-    @{ Dest = "SKILL_SDAD_METHODOLOGY.md";  Source = "SDAD_CC_SKILL_SDAD_METHODOLOGY_v2_0.md" },
-    @{ Dest = "SKILL_AI_ARCHITECT.md";      Source = "SDAD_CC_SKILL_AI_ARCHITECT_v2_0.md" },
-    @{ Dest = "SKILL_AI_ENGINEER.md";       Source = "SDAD_CC_SKILL_AI_ENGINEER_v2_0.md" },
-    @{ Dest = "SKILL_COMPLIANCE.md";        Source = "SDAD_CC_SKILL_COMPLIANCE_v2_0.md" },
-    @{ Dest = "LESSON_LIBRARY.md";          Source = "SDAD_CC_LESSON_LIBRARY_v2_0.md" }
-)
-
-function Write-Ok($msg)   { Write-Host "  [OK] $msg" -ForegroundColor Green }
-function Write-Warn($msg) { Write-Host "  [!!] $msg" -ForegroundColor Yellow }
-function Write-Fail($msg) { Write-Host "  [XX] $msg" -ForegroundColor Red }
-function Write-Info($msg) { Write-Host "  --> $msg" -ForegroundColor Cyan }
-function Write-Step($msg) { Write-Host "" ; Write-Host $msg -ForegroundColor White }
-
-function Confirm-Action($prompt) {
-    $answer = Read-Host "  $prompt [Y/n]"
-    if ([string]::IsNullOrWhiteSpace($answer)) { $answer = "y" }
-    return $answer -match "^[Yy]$"
-}
-
-function Command-Exists($cmd) {
-    return [bool](Get-Command $cmd -ErrorAction SilentlyContinue)
-}
-
-function Show-Header {
+function Write-Header {
     Write-Host ""
-    Write-Host "  ============================================" -ForegroundColor Blue
-    Write-Host "  G7 SDAD-CC v$SDAD_VERSION - Installer (Windows)  " -ForegroundColor Blue
-    Write-Host "  Spec-Driven AI Development for Claude Code  " -ForegroundColor Blue
-    Write-Host "  ============================================" -ForegroundColor Blue
+    Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║        SDAD-CC v3.0 — Installer              ║" -ForegroundColor Cyan
+    Write-Host "║   Spec-Driven AI Development for Claude Code ║" -ForegroundColor Cyan
+    Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 }
 
-function Check-Node {
-    Write-Step "Step 1/5 - Checking Node.js"
-    if (Command-Exists "node") {
-        $rawVersion = node --version
-        $versionNumber = $rawVersion.TrimStart("v").Split(".")[0]
-        if ([int]$versionNumber -ge $NODE_MIN_VERSION) {
-            Write-Ok "Node.js $rawVersion - OK"
-            return
-        }
-        else {
-            Write-Warn "Node.js $rawVersion found but v$NODE_MIN_VERSION+ required"
-        }
-    }
-    else {
-        Write-Warn "Node.js not found"
-    }
-    Install-Node
-}
+function Write-Step($msg) { Write-Host "▶ $msg" -ForegroundColor Yellow }
+function Write-OK($msg)   { Write-Host "  ✓ $msg" -ForegroundColor Green }
+function Write-Info($msg) { Write-Host "  ℹ️  $msg" -ForegroundColor Gray }
+function Write-Fail($msg) { Write-Host "  ✗ $msg" -ForegroundColor Red; exit 1 }
 
-function Install-Node {
-    if (-not (Confirm-Action "Install Node.js $NODE_MIN_VERSION+?")) {
-        Write-Fail "Node.js is required. Install from https://nodejs.org and re-run."
-        exit 1
-    }
-    if (Command-Exists "winget") {
-        Write-Info "Installing Node.js via winget..."
-        winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
-    }
-    elseif (Command-Exists "choco") {
-        Write-Info "Installing Node.js via Chocolatey..."
-        choco install nodejs-lts -y
-    }
-    else {
-        Write-Fail "No package manager found (winget/choco)."
-        Write-Fail "Install Node.js manually: https://nodejs.org"
-        exit 1
-    }
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    if (Command-Exists "node") {
-        Write-Ok "Node.js $(node --version) installed"
-    }
-    else {
-        Write-Warn "Node.js installed but not in PATH yet. Restart PowerShell and re-run."
-        exit 1
+function Download-File($url, $dest) {
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
+        Write-OK $dest
+    } catch {
+        Write-Fail "Could not download $url — check internet connection"
     }
 }
 
-function Check-ClaudeCode {
-    Write-Step "Step 2/5 - Checking Claude Code"
-    if (Command-Exists "claude") {
-        Write-Ok "Claude Code found - OK"
-        return
+function Get-RemoteVersion {
+    $json = (Invoke-WebRequest -Uri "$REPO_ROOT/version.json" -UseBasicParsing).Content
+    if ($json -match '"version"\s*:\s*"([^"]+)"') { return $Matches[1] }
+    return "unknown"
+}
+
+function Get-LocalVersion {
+    if (Test-Path ".sdad/version.json") {
+        $json = Get-Content ".sdad/version.json" -Raw
+        if ($json -match '"version"\s*:\s*"([^"]+)"') { return $Matches[1] }
     }
-    Write-Warn "Claude Code not found"
-    if (Confirm-Action "Install Claude Code now?") {
-        Write-Info "Installing Claude Code..."
-        npm install -g @anthropic-ai/claude-code
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        if (Command-Exists "claude") {
-            Write-Ok "Claude Code installed"
-        }
-        else {
-            Write-Warn "Installed but not in PATH yet. Restart PowerShell and re-run."
-            exit 1
-        }
+    return "none"
+}
+
+function Save-Version($version, $key) {
+    New-Item -ItemType Directory -Force -Path ".sdad" | Out-Null
+    Set-Content -Path ".sdad\version.json" -Value @"
+{
+  "version": "$version",
+  "$key": "$(Get-Date -Format 'yyyy-MM-dd')"
+}
+"@
+    Write-OK ".sdad\version.json → v$version"
+}
+
+Write-Header
+
+# ─── UPDATE MODE ────────────────────────────────────────────────────────────
+if ($update) {
+    Write-Step "Checking for updates..."
+
+    $remoteVersion = Get-RemoteVersion
+    $localVersion = Get-LocalVersion
+
+    Write-Host "  Local version:  $localVersion"
+    Write-Host "  Remote version: $remoteVersion"
+
+    if ($localVersion -eq $remoteVersion) {
+        Write-Host ""
+        Write-OK "Already up to date (v$remoteVersion)"
+        Write-Host ""
+        exit 0
     }
-    else {
-        Write-Fail "Claude Code required. Install: npm install -g @anthropic-ai/claude-code"
-        exit 1
+
+    Write-Host "  ↑ Update available: $localVersion → $remoteVersion"
+    Write-Host ""
+    Write-Step "Updating CLAUDE.md..."
+    Download-File "$REPO/SDAD_CC_CLAUDE_MD_v3_0.md" "CLAUDE.md"
+
+    Write-Step "Saving version..."
+    Save-Version $remoteVersion "updated"
+
+    Write-Host ""
+    Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Green
+    Write-Host "║    ✅ SDAD-CC updated to v$remoteVersion!         ║" -ForegroundColor Green
+    Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Green
+    Write-Host ""
+    exit 0
+}
+
+# ─── STEP 1: Node.js ────────────────────────────────────────────────────────
+Write-Step "Checking Node.js..."
+$nodeOk = $false
+try {
+    $nodeVer = (node --version 2>$null)
+    $major = [int]($nodeVer -replace 'v(\d+)\..*','$1')
+    if ($major -ge 18) {
+        Write-OK "Node.js $nodeVer"
+        $nodeOk = $true
+    } else {
+        Write-Info "Node.js $nodeVer found but version is below 18."
+    }
+} catch {}
+
+if (-not $nodeOk) {
+    Write-Info "Installing Node.js via winget..."
+    try {
+        winget install OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements
+        Write-OK "Node.js installed. You may need to restart PowerShell if 'node' is not found."
+        Write-Info "If the installer fails at npm steps, restart PowerShell and re-run."
+    } catch {
+        Write-Fail "Could not install Node.js automatically. Please install from https://nodejs.org"
     }
 }
 
-function Check-Git {
-    Write-Step "Step 3/5 - Checking Git repository"
-    if (-not (Command-Exists "git")) {
-        Write-Fail "git not found. Install from https://git-scm.com"
-        exit 1
-    }
-    $gitCheck = git rev-parse --git-dir 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $repoRoot = git rev-parse --show-toplevel
-        Write-Ok "Git repository found: $repoRoot"
-        Set-Location $repoRoot
-    }
-    else {
-        Write-Warn "Current directory is not a git repository: $(Get-Location)"
-        if (Confirm-Action "Initialize a git repository here?") {
-            git init
-            Write-Ok "Git repository initialized: $(Get-Location)"
-        }
-        else {
-            Write-Fail "SDAD-CC must be installed inside a git repository."
-            exit 1
-        }
-    }
+# ─── STEP 2: Claude Code ────────────────────────────────────────────────────
+Write-Step "Checking Claude Code..."
+try {
+    $claudeVer = (claude --version 2>$null)
+    Write-OK "Claude Code $claudeVer"
+} catch {
+    Write-Info "Installing Claude Code..."
+    npm install -g @anthropic-ai/claude-code
+    Write-OK "Claude Code installed"
 }
 
-function Install-SdadFiles {
-    Write-Step "Step 4/5 - Installing SDAD-CC v$SDAD_VERSION files"
+# ─── STEP 3: cc-status-line ─────────────────────────────────────────────────
+Write-Step "Installing cc-status-line (required — context budget monitor)..."
+try {
+    npm install -g cc-status-line 2>$null
+} catch {
+    Write-Info "Global install failed — cc-status-line will run via npx (also fine)"
+}
+Write-OK "cc-status-line ready — run 'npx cc-status-line@latest' before each session"
 
-    $appendClaude = $false
-    if (Test-Path "CLAUDE.md") {
-        Write-Warn "CLAUDE.md already exists"
-        if (Confirm-Action "Append SDAD-CC to existing CLAUDE.md? (recommended)") {
-            $appendClaude = $true
-        }
-    }
-
-    $keepLessons = $false
-    if (Test-Path "LESSON_LIBRARY.md") {
-        $lineCount = (Get-Content "LESSON_LIBRARY.md").Count
-        if ($lineCount -gt 30) {
-            Write-Warn "Existing LESSON_LIBRARY.md found with entries"
-            if (Confirm-Action "Keep existing Lesson Library? (recommended)") {
-                $keepLessons = $true
-                Write-Ok "LESSON_LIBRARY.md preserved"
-            }
-        }
-    }
-
-    $downloadOk = $true
-    foreach ($file in $REQUIRED_FILES) {
-        $dest   = $file.Dest
-        $source = $file.Source
-        $url    = "$SDAD_REPO/kit/$source"
-
-        if ($dest -eq "LESSON_LIBRARY.md" -and $keepLessons) {
-            Write-Ok "LESSON_LIBRARY.md - kept existing"
-            continue
-        }
-
-        Write-Info "Installing $dest..."
-        try {
-            if ($dest -eq "CLAUDE.md" -and $appendClaude) {
-                $content = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
-                Add-Content -Path $dest -Value ""
-                Add-Content -Path $dest -Value "# -- SDAD-CC v$SDAD_VERSION --"
-                Add-Content -Path $dest -Value $content
-                Write-Ok "CLAUDE.md - appended"
-            }
-            else {
-                Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
-                Write-Ok "$dest - installed"
-            }
-        }
-        catch {
-            Write-Warn "Could not download $source"
-            $downloadOk = $false
-        }
-    }
-
-    if (-not $downloadOk) {
-        Write-Warn "Some files could not be downloaded. Check your connection."
-        if (-not (Confirm-Action "Continue anyway?")) { exit 1 }
-    }
+# ─── STEP 4: git ────────────────────────────────────────────────────────────
+Write-Step "Checking git..."
+try {
+    git rev-parse --git-dir 2>$null | Out-Null
+    Write-OK "Git repo detected"
+} catch {
+    Write-Info "No git repo found. Initializing..."
+    git init
+    Write-OK "Git initialized"
 }
 
-function Show-PreferencesInstructions {
-    Write-Step "Step 5/5 - Claude User Preferences"
-    Write-Host ""
-    Write-Host "  Manual step required - takes 60 seconds" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "  1. Open: https://claude.ai/settings/profile"
-    Write-Host "  2. Scroll to Preferences"
-    Write-Host "  3. Paste the content of SDAD_USER_PREFERENCES_SNIPPET_v1_3.md"
-    Write-Host "  4. Save"
-    Write-Host ""
-    if (Confirm-Action "Open Claude settings in your browser?") {
-        Start-Process "https://claude.ai/settings/profile"
+# ─── STEP 5: Download SDAD-CC files ─────────────────────────────────────────
+Write-Step "Downloading SDAD-CC v3.0 files..."
+
+# CLAUDE.md
+if (Test-Path "CLAUDE.md") {
+    $content = Get-Content "CLAUDE.md" -Raw
+    if ($content -match [regex]::Escape($SDAD_MARKER)) {
+        Write-Info "CLAUDE.md already contains SDAD-CC. Skipping — run with --update to upgrade."
+    } else {
+        Write-Info "CLAUDE.md exists (non-SDAD). Appending SDAD-CC content..."
+        $sdadContent = (Invoke-WebRequest -Uri "$REPO/SDAD_CC_CLAUDE_MD_v3_0.md" -UseBasicParsing).Content
+        Add-Content -Path "CLAUDE.md" -Value "`n$sdadContent"
+        Write-OK "CLAUDE.md updated"
     }
+} else {
+    Download-File "$REPO/SDAD_CC_CLAUDE_MD_v3_0.md" "CLAUDE.md"
 }
 
-function Show-ExternalSkills {
-    Write-Host ""
-    Write-Host "  Optional: External Skills (run inside a claude session)" -ForegroundColor White
-    Write-Host ""
-    Write-Host "  /plugin install example-skills@anthropic-agent-skills" -ForegroundColor Cyan
-    Write-Host "  npx skills add https://github.com/wshobson/agents --skill api-design-principles" -ForegroundColor Cyan
-    Write-Host "  /plugin marketplace add obra/superpowers" -ForegroundColor Cyan
-    Write-Host ""
+# ─── STEP 6: Create .sdad/ structure ────────────────────────────────────────
+Write-Step "Creating .sdad/ directory structure..."
+New-Item -ItemType Directory -Force -Path ".sdad" | Out-Null
+New-Item -ItemType Directory -Force -Path ".sdad\flows" | Out-Null
+New-Item -ItemType File -Force -Path ".sdad\.gitkeep" | Out-Null
+Write-OK ".sdad\ and .sdad\flows\ ready"
+
+# .gitignore
+$gitignorePath = ".gitignore"
+$ignoreEntry = ".sdad/agent_output.tmp"
+if (Test-Path $gitignorePath) {
+    $existing = Get-Content $gitignorePath -Raw
+    if ($existing -notmatch [regex]::Escape($ignoreEntry)) {
+        Add-Content -Path $gitignorePath -Value "`n# SDAD-CC — temp files`n$ignoreEntry"
+    }
+} else {
+    Set-Content -Path $gitignorePath -Value "# SDAD-CC — temp files`n$ignoreEntry"
 }
+Write-OK ".gitignore updated"
 
-function Show-Verification {
-    Write-Host ""
-    Write-Host "  Verification - run these inside claude:" -ForegroundColor White
-    Write-Host ""
-    Write-Host "  `$sdad     - All 5 phases + active skills listed" -ForegroundColor Cyan
-    Write-Host "  `$skills   - 4 skills active by default" -ForegroundColor Cyan
-    Write-Host "  `$spec     - First requirements question" -ForegroundColor Cyan
-    Write-Host "  `$pause    - Session state from SPEC.md + git log" -ForegroundColor Cyan
-    Write-Host "  `$SM hello - SIMPLE MODE response" -ForegroundColor Cyan
-    Write-Host ""
-}
+# ─── STEP 7: Save version ───────────────────────────────────────────────────
+Write-Step "Saving version info..."
+$remoteVersion = Get-RemoteVersion
+Save-Version $remoteVersion "installed"
 
-function Show-Summary {
-    Write-Host ""
-    Write-Host "  ============================================" -ForegroundColor Green
-    Write-Host "  SDAD-CC v$SDAD_VERSION installed successfully!     " -ForegroundColor Green
-    Write-Host "  ============================================" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "  Files installed in: $(Get-Location)"
-    Write-Host ""
-    Write-Host "  Next steps:"
-    Write-Host "  1. Complete User Preferences step (if not done)"
-    Write-Host "  2. Run: claude"
-    Write-Host "  3. Type: `$sdad"
-    Write-Host ""
-    Write-Host "  Docs: https://github.com/diegomondrik/sdad-cc" -ForegroundColor Cyan
-    Write-Host ""
-}
-
-Show-Header
-Check-Node
-Check-ClaudeCode
-Check-Git
-Install-SdadFiles
-Show-PreferencesInstructions
-Show-ExternalSkills
-Show-Verification
-Show-Summary
-
+# ─── DONE ────────────────────────────────────────────────────────────────────
+Write-Host ""
+Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Green
+Write-Host "║          ✅ SDAD-CC v3.0 installed!          ║" -ForegroundColor Green
+Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host ""
+Write-Host "Next steps:" -ForegroundColor Cyan
+Write-Host "  1. Go to claude.ai/settings/profile → Preferences"
+Write-Host "     Paste the content of SDAD_USER_PREFERENCES_SNIPPET.md"
+Write-Host ""
+Write-Host "  2. To start a new project with SDAD:"
+Write-Host "     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit/project-init.ps1' -OutFile 'project-init.ps1'"
+Write-Host "     powershell -ExecutionPolicy Bypass -File '.\project-init.ps1'"
+Write-Host ""
+Write-Host "  3. Before each Claude Code session, run:"
+Write-Host "     npx cc-status-line@latest"
+Write-Host "     Then in a new terminal: claude"
+Write-Host ""
+Write-Host "  4. Inside Claude Code, type `$sdad to verify installation"
+Write-Host ""
+Write-Host "  To update SDAD-CC in future:"
+Write-Host "     powershell -ExecutionPolicy Bypass -File '.\install-sdad.ps1' --update"
+Write-Host ""
