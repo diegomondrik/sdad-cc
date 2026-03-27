@@ -67,7 +67,7 @@ powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1"
 
 1. Checks Node.js 18+ — installs if missing (via brew / apt / winget / nvm)
 2. Checks Claude Code — installs via npm if missing
-3. Installs `cc-status-line` — required context budget monitor
+3. Installs `ccstatusline` — required context budget monitor
 4. Checks git — initializes if missing
 5. Downloads and copies all SDAD-CC files to your repo root
 6. Handles existing CLAUDE.md — appends rather than overwrites
@@ -127,7 +127,7 @@ The installer handles these automatically, but for reference:
 | Claude Code CLI | The AI agent | `claude --version` |
 | Claude Pro / Max / Team / Enterprise | Required to use Claude Code | claude.ai account |
 | git initialized | SDAD-CC files versioned with your code | `git status` |
-| cc-status-line | Context budget monitor | `npx cc-status-line@latest` |
+| ccstatusline | Context budget monitor | `npx ccstatusline@latest` |
 
 ---
 
@@ -163,10 +163,10 @@ If Node.js is missing: https://nodejs.org
 If Claude Code is missing: `npm install -g @anthropic-ai/claude-code`
 If not in a git repo: `git init`
 
-### Step 2 — Install cc-status-line
+### Step 2 — Install ccstatusline
 
 ```bash
-npm install -g cc-status-line
+npm install -g ccstatusline
 ```
 
 ### Step 3 — Copy files to repo root
@@ -230,7 +230,7 @@ Navigate to your repo and start Claude Code:
 
 ```bash
 cd /path/to/your/repo
-npx cc-status-line@latest   # in one terminal
+npx ccstatusline@latest   # in one terminal
 claude                       # in another terminal
 ```
 
@@ -308,7 +308,7 @@ Then run the project initializer for each active project:
 
 Key changes from v2.0 to v3.0:
 - Context Budget monitoring (50% / 65% thresholds) added to all sessions
-- `cc-status-line` is now a required install, not optional
+- `ccstatusline` is now a required install, not optional
 - Sub-agent delegation via `$agent` (automatic — no developer action required)
 - New commands: `$verify`, `$flow`
 - `$pause` now includes Context Budget status and flows count
@@ -381,8 +381,8 @@ Treat CLAUDE.md as infrastructure code. Version it in Git alongside your codebas
 → On Mac/Linux: check that npm global bin is in your PATH
 → On Windows: restart PowerShell after installation
 
-**cc-status-line not showing**
-→ Make sure you run `npx cc-status-line@latest` before starting `claude`, not after
+**ccstatusline not showing**
+→ Make sure you run `npx ccstatusline@latest` before starting `claude`, not after
 → It must run in a separate terminal from the one running Claude Code
 
 **$build blocked after 65% context warning**

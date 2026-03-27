@@ -169,7 +169,7 @@ Write-Host "║      ✅ Project '$projectName' ready!        ║" -ForegroundCo
 Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Run: npx cc-status-line@latest"
+Write-Host "  1. Run: npx ccstatusline@latest"
 Write-Host "  2. In a new terminal: claude"
 Write-Host "  3. Inside Claude Code: `$spec"
 Write-Host ""

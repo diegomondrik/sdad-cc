@@ -9,7 +9,7 @@
 | Added in v3.0 | Why |
 |---------------|-----|
 | Context Budget management (50% / 65%) | Claude degrades past ~50% context — now monitored actively |
-| `cc-status-line` required (was optional) | Primary visual indicator for context budget |
+| `ccstatusline` required (was optional) | Primary visual indicator for context budget |
 | Sub-agent delegation (`$agent`) | Expensive tasks run in isolated context — preserves main session quality |
 | `$verify` command | Flags outdated API/library docs before coding (training lag of 6-12 months) |
 | `$flow` command | Captures project-specific repeatable sequences as named commands |
@@ -25,11 +25,11 @@ lesson library, $qa auto/review/full, all skills, $doc, $docfinal, $SM, $QA.
 ## Before Every Session
 
 ```bash
-npx cc-status-line@latest   # terminal 1 — shows model, context %, cost, git branch
+npx ccstatusline@latest   # terminal 1 — shows model, context %, cost, git branch
 claude                       # terminal 2 — start Claude Code
 ```
 
-Always run cc-status-line first. It is your primary context budget indicator.
+Always run ccstatusline first. It is your primary context budget indicator.
 
 ---
 
@@ -204,7 +204,7 @@ Tasks delegated via `$agent` run in isolated context windows — they do not con
 the main session budget. This is one reason sub-agent delegation is automatic for
 expensive tasks.
 
-**cc-status-line** shows the context % in real time. Use it as your primary indicator.
+**ccstatusline** shows the context % in real time. Use it as your primary indicator.
 
 ---
 
@@ -458,7 +458,7 @@ encryption, access control, data residency, tamper-evident audit trail.
 
 | Practice | Why it matters |
 |----------|---------------|
-| Run `cc-status-line` before every session | Real-time context % visibility — don't fly blind |
+| Run `ccstatusline` before every session | Real-time context % visibility — don't fly blind |
 | Start each session with `$pause` | Restores full state from SPEC.md + git log in seconds |
 | Watch for the 50% soft warning | Plan your session end before the 65% hard block |
 | Use `$agent` commands for module reviews | Isolated context → higher quality output for complex reviews |

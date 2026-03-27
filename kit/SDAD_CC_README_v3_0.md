@@ -35,7 +35,7 @@ powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1"
 The installer will:
 - Check and install Node.js 18+ if missing
 - Check and install Claude Code if missing
-- Install `cc-status-line` (required context budget monitor)
+- Install `ccstatusline` (required context budget monitor)
 - Check or initialize a git repository
 - Copy all SDAD-CC files to your repo root
 - Create `.sdad/` directory structure
@@ -67,7 +67,7 @@ structure in your repo.
 ## Before every session
 
 ```bash
-npx cc-status-line@latest   # terminal 1 — shows model, context %, cost, git branch
+npx ccstatusline@latest   # terminal 1 — shows model, context %, cost, git branch
 claude                       # terminal 2
 ```
 
@@ -125,7 +125,7 @@ Claude's reasoning degrades as the session context fills. SDAD-CC monitors this:
 | 50% | ⚠️ Soft warning — informational, continue normally |
 | 65% | 🔴 Hard warning — finishes current increment, blocks `$build`, prompts session restart |
 
-`cc-status-line` shows context % in real time. Sub-agents (`$agent`) run in isolated
+`ccstatusline` shows context % in real time. Sub-agents (`$agent`) run in isolated
 context windows and do not consume the main session budget.
 
 ---
@@ -230,7 +230,7 @@ sdad-cc/
 
 ## Verification
 
-After installing, run `npx cc-status-line@latest` in one terminal, start `claude`
+After installing, run `npx ccstatusline@latest` in one terminal, start `claude`
 in another, then verify inside Claude Code:
 
 | Command | Expected |

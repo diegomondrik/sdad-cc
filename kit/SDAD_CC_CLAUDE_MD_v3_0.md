@@ -430,15 +430,15 @@ External skills: see External Skills table above.
 ---
 
 ## Required Environment Tool
-cc-status-line is installed automatically by the SDAD-CC installer.
+ccstatusline is installed automatically by the SDAD-CC installer.
 It provides a real-time status bar showing model, context %, session cost, git branch and worktree.
 Run it before starting every Claude Code session:
 
 ```bash
-npx cc-status-line@latest
+npx ccstatusline@latest
 ```
 
-Use cc-status-line as your primary context budget indicator — it shows the same
+Use ccstatusline as your primary context budget indicator — it shows the same
 thresholds (50% / 65%) that SDAD-CC monitors internally.
 
 ---
