@@ -146,14 +146,14 @@ try {
     Write-OK "Claude Code installed"
 }
 
-# ─── STEP 3: cc-status-line ─────────────────────────────────────────────────
-Write-Step "Installing cc-status-line (required — context budget monitor)..."
-try {
-    npm install -g cc-status-line 2>$null
-} catch {
-    Write-Info "Global install failed — cc-status-line will run via npx (also fine)"
-}
-Write-OK "cc-status-line ready — run 'npx cc-status-line@latest' before each session"
+# ─── STEP 3: ccstatusline ───────────────────────────────────────────────────
+Write-Step "Installing ccstatusline (context budget monitor)..."
+npm install -g ccstatusline
+Write-OK "ccstatusline installed"
+Write-Host ""
+Write-Host "  📋 Run the configuration TUI once to set up your status line:"
+Write-Host "     npx ccstatusline@latest"
+Write-Host "  After that it appears automatically in every Claude Code session."
 
 # ─── STEP 4: git ────────────────────────────────────────────────────────────
 Write-Step "Checking git..."
@@ -224,7 +224,7 @@ Write-Host "     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/diego
 Write-Host "     powershell -ExecutionPolicy Bypass -File '.\project-init.ps1'"
 Write-Host ""
 Write-Host "  3. Before each Claude Code session, run:"
-Write-Host "     npx cc-status-line@latest"
+Write-Host "     npx ccstatusline@latest"
 Write-Host "     Then in a new terminal: claude"
 Write-Host ""
 Write-Host "  4. Inside Claude Code, type `$sdad to verify installation"

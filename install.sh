@@ -114,9 +114,14 @@ else
   echo "  ✓ Claude Code installed"
 fi
 
-# ─── STEP 3: cc-status-line ─────────────────────────────────────────────────
-echo "▶ cc-status-line (context budget monitor)..."
-echo "  ✓ Run 'npx cc-status-line@latest' before each session (no install needed)"
+# ─── STEP 3: ccstatusline ───────────────────────────────────────────────────
+echo "▶ Installing ccstatusline (context budget monitor)..."
+npm install -g ccstatusline
+echo "  ✓ ccstatusline installed"
+echo ""
+echo "  📋 Run the configuration TUI once to set up your status line:"
+echo "     npx ccstatusline@latest"
+echo "  After that it appears automatically in every Claude Code session."
 
 # ─── STEP 4: git ────────────────────────────────────────────────────────────
 echo "▶ Checking git..."
@@ -194,7 +199,7 @@ echo "  2. To start a new project with SDAD:"
 echo "     bash <(curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit/project-init.sh)"
 echo ""
 echo "  3. Before each Claude Code session, run:"
-echo "     npx cc-status-line@latest"
+echo "     npx ccstatusline@latest"
 echo "     Then in a new terminal: claude"
 echo ""
 echo "  4. Inside Claude Code, type \$sdad to verify installation"
