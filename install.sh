@@ -116,7 +116,7 @@ fi
 
 # ─── STEP 3: cc-status-line ─────────────────────────────────────────────────
 echo "▶ Installing cc-status-line (required — context budget monitor)..."
-npm install -g cc-status-line 2>/dev/null || npx cc-status-line@latest --version &>/dev/null
+npm install -g cc-status-line 2>/dev/null || npx cc-status-line@latest --version &>/dev/null || true
 echo "  ✓ cc-status-line ready — run 'npx cc-status-line@latest' before each session"
 
 # ─── STEP 4: git ────────────────────────────────────────────────────────────
