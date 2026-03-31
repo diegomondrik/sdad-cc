@@ -11,12 +11,24 @@ Always follow: Context Analysis → Requirements → Spec → Build → QA.
 Claude Code has direct filesystem and terminal access — use it. Read actual files.
 Run actual tests. Write directly to the repo. Never simulate what you can execute.
 
+SPEC.md discipline: keep SPEC.md accurate but lean. Remove resolved Open Decisions
+(§12) and completed increment details already captured in git history. SPEC.md
+should describe the current state of the system — not its full development history.
+
 ---
 
 ## Environment Declaration
 DIRECT WRITE: yes — always. Claude Code writes files directly to the repo.
 No Delivery Checkpoints. No Drift Warnings. No manual copy/paste.
 State is always the actual filesystem + SPEC.md + git log.
+
+FILESYSTEM READ DISCIPLINE:
+- Use view_range for targeted reads. Never read a full file >300 lines unless
+  the entire file is genuinely needed for the current increment.
+- Never paste file contents into the conversation when the file is already on
+  the filesystem — always use filesystem tools instead.
+- Logs and test outputs: extract only the relevant error or assertion, not the
+  full output. Never paste entire log dumps into the conversation.
 
 ---
 
@@ -44,6 +56,19 @@ RULES:
 - Hard warning does not interrupt mid-increment — always finish cleanly.
 - Sub-agents launched via $agent run in isolated context — they do not consume
   the main session budget.
+
+SESSION SCOPE DISCIPLINE:
+- One session = one complete increment (build + qa + fixes). Do not start a new
+  increment without first closing the current one cleanly.
+- Multiple findings within the same increment belong in the same session — that is
+  the normal $build → $qa → fix → $qa flow. Do not interrupt it.
+- If testing reveals issues outside the current increment's scope, flag them as
+  out-of-scope findings, document them in DECISIONS.md, and address them in a
+  new session as their own increment.
+- Do not read large files (500+ lines) in full unless strictly required for the
+  current increment. Prefer targeted reads (view_range) over full-file reads.
+- Do not paste test outputs or build logs into the conversation unless they
+  contain a specific error requiring analysis.
 
 ---
 
@@ -205,32 +230,6 @@ After writing code for an increment:
 
 Flag any Spec deviation before implementing:
 "⚠️ This would deviate from SPEC.md at [section]. Update Spec first or proceed?"
-
-DECISIONS LOG (automatic during $build):
-After each increment is completed and tests pass, append one entry to DECISIONS.md:
-
-  ## [D-XXX] [short decision title]
-  Date: [YYYY-MM-DD]
-  Origin: [prior design conversation | direct instruction]
-  Increment: [N] — [feature name]
-  Commit: [git commit hash — after commit, or "pending commit"]
-  Status: ✅ implemented
-
-  Decision: [what was decided — one or two sentences]
-  Alternatives considered: [what was explicitly ruled out, or "none discussed"]
-  Revert: [git revert [hash] — or specific instructions if more complex]
-
-If DECISIONS.md does not exist: create it with header before appending:
-  # DECISIONS.md — [project name]
-  # Decision log: connects design intent to implementation and git history.
-  # Format: one entry per increment or significant decision.
-  # Generated and maintained automatically by SDAD-CC.
-
-Entry numbering is sequential across the project lifetime (D-001, D-002...).
-Read existing DECISIONS.md before writing — never reset numbering.
-For changes that came as direct natural language instructions with no prior design discussion:
-  Origin: direct instruction
-  Alternatives considered: none discussed
 
 **$verify** (or $verify [library@version]) — Dependency Documentation Check.
 Before implementing with a specific library or API, Claude checks if the version
@@ -409,8 +408,7 @@ Each flow file contains: description, steps, expected output, last run date.
 
 **$pause** — Show current state by reading SPEC.md + git log + open findings.
   Current Phase | Spec Status | Compliance Tier | Context Budget status
-  Last increment + test result | Open QA findings | Active Skills
-  Decisions log: [N entries in DECISIONS.md — last entry title and date]
+  Last increment + test result | Open QA findings | Active Skills | Open Decisions
   Flows defined | Next step recommendation
 
 **$skills** — Show active and available AI specialist skills.
@@ -453,10 +451,6 @@ External skills: see External Skills table above.
 - $verify runs automatically when $build introduces a new dependency.
 - $flow files are stored in .sdad/flows/ — never in the repo root or /docs.
 - $pause always includes Context Budget status and flows defined count.
-- DECISIONS.md entry is written automatically after each completed increment — never skip.
-- If DECISIONS.md does not exist at first $build: create it with header before first entry.
-- DECISIONS.md entry numbering is always sequential and never reset across sessions.
-- Before session end or $pause, resolve any entries with Commit: "pending commit" using git log.
 
 ---
 
