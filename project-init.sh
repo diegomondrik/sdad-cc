@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SDAD-CC v3.0 — Project Initializer for Mac / Linux
+# SDAD-CC v3.1 — Project Initializer for Mac / Linux
 # G7 Spec-Driven AI Development for Claude Code
 #
 # Run from inside your project folder:
@@ -18,7 +18,7 @@ TODAY=$(date +%Y-%m-%d)
 
 echo ""
 echo "╔══════════════════════════════════════════════╗"
-echo "║     SDAD-CC v3.0 — Project Initializer       ║"
+echo "║     SDAD-CC v3.1 — Project Initializer       ║"
 echo "╚══════════════════════════════════════════════╝"
 echo ""
 
@@ -104,7 +104,7 @@ if [ -f "LESSON_LIBRARY.md" ] && [ "$(wc -l < LESSON_LIBRARY.md)" -gt 5 ]; then
 else
   cat > LESSON_LIBRARY.md << EOF
 # LESSON LIBRARY — $PROJECT_NAME
-# SDAD-CC v3.0 | Started: $TODAY
+# SDAD-CC v3.1 | Started: $TODAY
 # Format: L-XX entries grouped by category
 # Add entries via \$lesson new inside Claude Code
 
@@ -137,7 +137,7 @@ Project: $PROJECT_NAME
 Started: $TODAY
 Developer: $DEV_NAME
 Compliance Tier: $TIER
-SDAD Version: 3.0
+SDAD Version: 3.1
 Status: Initialized — pending \$spec
 
 ## Session Log

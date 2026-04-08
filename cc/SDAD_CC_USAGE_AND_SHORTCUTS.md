@@ -1,24 +1,6 @@
 # G7 SDAD-CC — Usage Guide & Shortcuts Reference
 # Spec-Driven AI Development for Claude Code
-# Version 3.0 | 2026
-
----
-
-## What Changed from v2.0
-
-| Added in v3.0 | Why |
-|---------------|-----|
-| Context Budget management (50% / 65%) | Claude degrades past ~50% context — now monitored actively |
-| `ccstatusline` required (was optional) | Primary visual indicator for context budget |
-| Sub-agent delegation (`$agent`) | Expensive tasks run in isolated context — preserves main session quality |
-| `$verify` command | Flags outdated API/library docs before coding (training lag of 6-12 months) |
-| `$flow` command | Captures project-specific repeatable sequences as named commands |
-| Project initializer (`project-init.sh` / `.ps1`) | One-command SDAD setup per repo, with auto-install of methodology if missing |
-| `$pause` updated | Now shows Context Budget status and defined flows count |
-| `.sdad/` directory structure | Required for flows and sub-agent temp files |
-
-What is unchanged from v2.0: all five phases, SPEC.md structure, compliance tiers,
-lesson library, $qa auto/review/full, all skills, $doc, $docfinal, $SM, $QA.
+# Version 3.1 | 2026
 
 ---
 
@@ -26,7 +8,7 @@ lesson library, $qa auto/review/full, all skills, $doc, $docfinal, $SM, $QA.
 
 ```bash
 npx ccstatusline@latest   # terminal 1 — shows model, context %, cost, git branch
-claude                       # terminal 2 — start Claude Code
+claude                    # terminal 2 — start Claude Code
 ```
 
 Always run ccstatusline first. It is your primary context budget indicator.
@@ -48,9 +30,9 @@ What Claude reads:
 - `.github/workflows/` — knows if CI exists
 
 What Claude detects automatically:
-- **Compliance tier signals** — payment integrations, health data, user accounts, corporate deployment
+- **Compliance tier signals** — payment integrations, health data, user accounts
 - **UI presence** — React/Vue/Tailwind/mobile frameworks trigger a frontend-design skill suggestion
-- **Missing tooling** — no test command, no linter, no .env.example flagged before Phase 1
+- **Missing tooling** — no test command, no linter, no .env.example → flagged before Phase 1
 - **Context Budget baseline** — session starts at 0%, thresholds monitored from here
 
 Output:
@@ -73,11 +55,9 @@ Output:
 
 ### PHASE 1 — Requirements Definition [$spec]
 
-One targeted question at a time, in order of impact. Claude always proposes a
-reasonable default — you can say "accept" or "yes" to move forward.
-
-Because Claude has already read the repo in Phase 0, it skips questions it
-can already answer from the code.
+One targeted question at a time. Claude always proposes a reasonable default —
+say "accept" or "yes" to move forward. Claude skips questions it can already
+answer from the code it read in Phase 0.
 
 Coverage order:
 1. Scope & MVP boundaries
@@ -91,7 +71,7 @@ Coverage order:
 9. Documentation needs
 10. Testing strategy
 
-**The compliance tier question** is mandatory in every project:
+**The compliance tier question** is mandatory:
 ```
 What's the deployment context for this project?
 (1) Internal tool / POC — Tier 1 Standard
@@ -117,6 +97,8 @@ You can: (1) approve to proceed to $build,
 (3) ask me to adjust anything.
 ```
 
+For Tier 3: §9 Security & Compliance must be complete and approved before `$build` is allowed.
+
 `SPEC.md` is a living document. Commit it alongside your code.
 
 ---
@@ -124,7 +106,10 @@ You can: (1) approve to proceed to $build,
 ### PHASE 3 — Guided Development [$build]
 
 Develops in vertical increments — a complete feature with tests.
-Blocked if Context Budget hard warning (65%) was triggered — see Context Budget below.
+Blocked if Context Budget hard warning (65%) was triggered.
+
+WHEN SPEC.md not found: Claude reads the repo, then offers $spec or $docfinal — does not proceed to build.
+WHEN no test command found (no package.json test script / Makefile / pyproject.toml): flagged before writing code.
 
 Each increment sequence:
 
@@ -149,7 +134,9 @@ If tests fail, Claude fixes before proceeding.
 
 **4. Update SPEC.md §13** — AI Authorship Log entry added automatically.
 
-**5. Trigger $qa** — runs in auto mode by default.
+**5. Append DECISIONS.md entry** — one entry per completed increment.
+
+**6. Trigger $qa** — runs in auto mode by default.
 
 > Name your increments: `$build auth module` scopes work better than `$build` alone.
 
@@ -159,20 +146,23 @@ If tests fail, Claude fixes before proceeding.
 
 #### $qa (auto mode — default)
 - Runs all QA layers silently.
-- **Security (P0/P1/P2):** always surfaces for explicit approval. Never auto-fixed.
-- **Compliance findings:** always surfaces for explicit approval. Never auto-fixed.
-- **Spec deviations:** always surfaces for explicit approval. Never auto-fixed.
-- **Must fix / should improve:** applies directly, shows unified diff.
+- **Security (P0/P1/P2), Compliance, Spec deviations:** always surfaces for explicit approval. Never auto-fixed.
+- **Must fix / should improve:** applies directly, shows unified diff, single confirmation.
 - **Style suggestions:** applies silently.
 - After fixes: "Applied N changes. Confirm? (yes / revert all)"
+- Then: Lesson Capture evaluation.
 
 #### $qa review
 Full manual mode — complete report, nothing applied without per-finding approval.
 Use for complex increments, architectural changes, or when you want to learn from findings.
 
 #### $qa full
-Alias for `$QA` — full project audit, not just the current increment.
-Always manual review mode. Use before PRs, after large refactors, or at sprint end.
+Full project audit in SDAD-Aware mode. Always manual review.
+Use before PRs, after large refactors, or at sprint end.
+
+#### $QA (from User Preferences)
+Full project audit — runs in SDAD-Aware mode if a Spec is present, Standalone otherwise.
+Works in any Claude session, not just inside an SDAD project.
 
 #### When to use which:
 
@@ -180,19 +170,16 @@ Always manual review mode. Use before PRs, after large refactors, or at sprint e
 |---------|----------|
 | `$qa` (auto) | Normal flow — you trust the increment and want to move fast |
 | `$qa review` | Complex increment, architectural change, or want full visibility |
-| `$qa full` | Before PR/merge, after large refactor, at sprint end |
-| `$QA` | Full project audit from User Preferences |
+| `$qa full` | Before PR/merge, after large refactor, at sprint end (SDAD-Aware) |
+| `$QA` | Full audit from User Preferences — works outside a project too |
 
 ---
 
 ## Context Budget
 
-Claude's reasoning quality degrades as the context window fills. SDAD-CC monitors
-this actively and emits warnings at two thresholds.
-
 | Threshold | Type | What happens |
 |-----------|------|-------------|
-| **50%** | ⚠️ Soft warning | Informational. Claude continues normally. Good moment to consider session change after current increment. |
+| **50%** | ⚠️ Soft warning | Informational. Continue normally. Good moment to consider session change after current increment. |
 | **65%** | 🔴 Hard warning | Claude finishes the current increment (including tests and $qa), then blocks `$build`. Run `$pause`, start a new session. |
 
 **What stays available after a hard warning:**
@@ -201,20 +188,18 @@ Only `$build` is blocked.
 
 **Sub-agents and context budget:**
 Tasks delegated via `$agent` run in isolated context windows — they do not consume
-the main session budget. This is one reason sub-agent delegation is automatic for
-expensive tasks.
+the main session budget.
 
-**ccstatusline** shows the context % in real time. Use it as your primary indicator.
+`ccstatusline` shows context % in real time. Use it as your primary indicator.
 
 ---
 
 ## Sub-Agent Delegation ($agent)
 
-Claude automatically delegates certain tasks to isolated sub-agents — separate
-Claude Code instances with clean context windows. This is silent: you see only
-the result, not the mechanics.
+Claude automatically delegates certain tasks to isolated sub-agents.
+You see only the result, not the mechanics.
 
-**Automatic delegation (no action required from you):**
+**Automatic delegation:**
 
 | Task | Why it delegates |
 |------|-----------------|
@@ -223,7 +208,7 @@ the result, not the mechanics.
 | `$agent test [module]` | Test suite generation for existing module |
 | `$agent audit [path]` | Security audit of a file or folder |
 
-**Always in main context (requires session state):**
+**Always in main context:**
 
 | Task | Why it stays |
 |------|-------------|
@@ -231,7 +216,7 @@ the result, not the mechanics.
 | `$spec` / `$specout` | Requires conversation history |
 | `$build` | Active development requires full context |
 
-You can also trigger sub-agents directly:
+Direct triggers:
 ```
 $agent review src/auth/      → architectural review of the auth module
 $agent test src/api/users.js → generate test suite for that file
@@ -242,9 +227,8 @@ $agent audit src/            → security audit of the full src/ folder
 
 ## $verify — Dependency Documentation Check
 
-Claude's training has a lag of 6-12 months. APIs and SDKs change. `$verify`
-checks whether the libraries in your project match what Claude knows — and flags
-when it cannot confirm documentation is current.
+Claude's training has a lag of 6-12 months. `$verify` checks whether the libraries
+in your project match what Claude knows and flags when documentation may be stale.
 
 ```
 $verify              → check all dependencies in the project
@@ -252,11 +236,10 @@ $verify anthropic    → check the Anthropic SDK version in use
 $verify openai@4.x   → check a specific version
 ```
 
-`$verify` runs **automatically** at the start of any `$build` that introduces a
-new dependency. You don't need to call it manually in those cases.
+`$verify` runs **automatically** at the start of any `$build` introducing a new dependency.
 
 If **Context 7 MCP** is installed, `$verify` uses it to fetch current docs.
-If not, it emits a per-library warning with the official changelog link.
+If not: emits a per-library warning with the official changelog link.
 
 ---
 
@@ -279,32 +262,24 @@ $flow [name] run      → execute a saved flow
 $flow [name] edit     → update an existing flow definition
 ```
 
-**Examples:**
-```
-$flow onboard-client  → full setup sequence for a new client environment
-$flow deploy-poc      → steps to deliver a POC build
-$flow seed-db         → database seeding + validation sequence
-$flow reset-dev       → tear down and rebuild dev environment
-```
-
 ---
 
 ## Command Reference
 
 | Command | Phase | What it does |
 |---------|-------|-------------|
-| `$SM` / `$S` | Any | Socratic-Meta Prompting — all prompt construction |
-| `$QA` | Any | Full project audit — SDAD-Aware or Standalone, always manual |
+| `$SM` / `$S` | Any | Socratic-Meta Prompting — all prompt construction (User Preferences) |
+| `$QA` | Any | Full audit — SDAD-Aware or Standalone (User Preferences) |
 | `$spec` | 1 | Guided requirements — one question at a time with defaults |
 | `$spec [section]` | 1 | Refine a specific Spec section |
 | `$specout` | 2 | Generate full 13-section Spec → writes to SPEC.md |
 | `$build` | 3 | Start development — requires approved SPEC.md |
 | `$build [feature]` | 3 | Start a specific named increment |
-| `$verify` | 3 | Check dependency documentation currency |
-| `$verify [lib]` | 3 | Check a specific library |
-| `$qa` | 4 | Auto QA — applies safe fixes, surfaces security for approval |
+| `$verify` | Any | Check dependency documentation currency |
+| `$verify [lib]` | Any | Check a specific library |
+| `$qa` | 4 | Auto QA — applies safe fixes, surfaces security/compliance for approval |
 | `$qa review` | 4 | Manual QA — full report, per-finding approval |
-| `$qa full` | 4 | Full project audit (alias for $QA in SDAD-Aware mode) |
+| `$qa full` | 4 | Full project audit in SDAD-Aware mode |
 | `$agent review [module]` | Any | Architectural review via sub-agent |
 | `$agent test [module]` | Any | Test suite generation via sub-agent |
 | `$agent audit [path]` | Any | Security audit via sub-agent |
@@ -326,7 +301,8 @@ $flow reset-dev       → tear down and rebuild dev environment
 | `$lesson [keyword]` | Any | Filter entries by keyword, category, or stack |
 | `$lesson [L-XX]` | Any | Show full entry for that lesson |
 | `$lesson new` | Any | Guided entry creation → writes to LESSON_LIBRARY.md |
-| `$pause` | Any | Show current state: Spec, git log, context budget, flows, open findings |
+| `$pause` | Any | Show current state: phase, Spec, tier, context budget, findings, decisions |
+| `$pause compress` | Any | Generate Session Snapshot for next session |
 | `$skills` | Any | View and adjust active AI specialist skills |
 | `$sdad` | Any | Show methodology overview and all commands |
 
@@ -367,38 +343,21 @@ encryption, access control, data residency, tamper-evident audit trail.
 | Performance Architect | Load modeling, bottlenecks, caching, async patterns |
 | Prompt Engineer | LLM prompt quality, token efficiency, output reliability |
 
-### External Skills (install via npx skills or /plugin)
+### External Skills
 
-**Always relevant:**
-
-| Skill | What it does | Install |
+| Skill | Activate when | Install |
 |-------|-------------|---------|
-| `api-design-principles` | REST + GraphQL design | `npx skills add https://github.com/wshobson/agents --skill api-design-principles` |
-| `frontend-design` | Production-grade UI quality. Auto-suggested when UI detected. | `/plugin install example-skills@anthropic-agent-skills` |
-| `skill-creator` | Create and evaluate custom SDAD-CC skills | `/plugin install example-skills@anthropic-agent-skills` |
-| `mcp-builder` | Build MCP servers for external integrations | `/plugin install example-skills@anthropic-agent-skills` |
-
-**Conditional on stack:**
-
-| Skill | What it does | Install |
-|-------|-------------|---------|
-| `python-performance-optimization` | Profiling, NumPy, async I/O, DB optimization | `npx skills add https://github.com/wshobson/agents --skill python-performance-optimization` |
-| `systematic-debugging` | Structured root cause analysis for complex bugs | `/plugin marketplace add obra/superpowers` |
+| `api-design-principles` | Designing/reviewing REST or GraphQL APIs | `npx skills add https://github.com/wshobson/agents --skill api-design-principles` |
+| `frontend-design` | Any project with UI (auto-suggested when detected) | `/plugin install example-skills@anthropic-agent-skills` |
+| `skill-creator` | Creating or evaluating custom SDAD skills | `/plugin install example-skills@anthropic-agent-skills` |
+| `mcp-builder` | Building MCP servers | `/plugin install example-skills@anthropic-agent-skills` |
+| `python-performance-optimization` | Python with performance requirements | `npx skills add https://github.com/wshobson/agents --skill python-performance-optimization` |
+| `systematic-debugging` | Complex bugs needing root cause analysis | `/plugin marketplace add obra/superpowers` |
 | `test-driven-development` | Strict TDD from Phase 3 | `/plugin marketplace add obra/superpowers` |
-
-**Conditional on project type:**
-
-| Skill | What it does | Install |
-|-------|-------------|---------|
-| `context-engineering-advisor` | Context management for LLM-intensive projects | `npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill context-engineering-advisor` |
-| `prioritization-advisor` | RICE/ICE/Kano for MVP scope in Phase 1 | `npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill prioritization-advisor` |
-
-**Conditional on compliance tier:**
-
-| Skill | What it does | Install |
-|-------|-------------|---------|
-| `technical-writing` | Formal documentation for Tier 2/3 deliverables | `npx skills add https://github.com/supercent-io/skills-template --skill technical-writing` |
-| `webapp-testing` | End-to-end web testing for Tier 2/3 | `/plugin install example-skills@anthropic-agent-skills` |
+| `context-engineering-advisor` | LLM-intensive projects | `npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill context-engineering-advisor` |
+| `prioritization-advisor` | MVP scope prioritization in Phase 1 | `npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill prioritization-advisor` |
+| `technical-writing` | Tier 2/3 formal documentation | `npx skills add https://github.com/supercent-io/skills-template --skill technical-writing` |
+| `webapp-testing` | Tier 2/3 end-to-end web testing | `/plugin install example-skills@anthropic-agent-skills` |
 
 ---
 
@@ -410,7 +369,7 @@ encryption, access control, data residency, tamper-evident audit trail.
 | **Tier 2 — Business** | SaaS, customer-facing, user data | Compliance Reviewer | PII docs, auth review, audit logging, sanitized errors |
 | **Tier 3 — Enterprise** | Regulated environments, corporate IT | Compliance Reviewer (full) | Threat model, data flow diagram, control matrix |
 
-**Tier 3 requires SPEC.md §9 to be complete before `$build` is allowed.**
+**Tier 3: SPEC.md §9 must be complete and approved before `$build` is allowed.**
 
 ---
 
@@ -419,8 +378,9 @@ encryption, access control, data residency, tamper-evident audit trail.
 `LESSON_LIBRARY.md` captures transferable patterns across projects.
 
 - After each `$qa`, Claude evaluates whether any finding is lesson-worthy.
-- If yes, it proposes one candidate (title, category, signal, principle).
-- If you approve, Claude writes the full entry directly to `LESSON_LIBRARY.md`.
+- If yes: proposes one candidate (title, category, signal, principle).
+- If approved: writes the full entry directly to `LESSON_LIBRARY.md`.
+- If nothing is lesson-worthy: skips silently.
 
 | Category | What it captures |
 |----------|-----------------|
@@ -429,8 +389,6 @@ encryption, access control, data residency, tamper-evident audit trail.
 | 🔍 Data & Debugging | Assumptions about external data, root cause patterns |
 | ⚙️ Environment | Runtime limitations, deploy constraints, platform behavior |
 | 🔄 Workflow | Patterns for working effectively with Claude |
-
-`$lesson [keyword]` to filter. `$lesson L-04` to read a specific entry.
 
 ---
 
@@ -458,15 +416,15 @@ encryption, access control, data residency, tamper-evident audit trail.
 
 | Practice | Why it matters |
 |----------|---------------|
-| Run `ccstatusline` before every session | Real-time context % visibility — don't fly blind |
+| Watch ccstatusline during sessions | Real-time context % visibility |
 | Start each session with `$pause` | Restores full state from SPEC.md + git log in seconds |
 | Watch for the 50% soft warning | Plan your session end before the 65% hard block |
-| Use `$agent` commands for module reviews | Isolated context → higher quality output for complex reviews |
+| Use `$agent` commands for module reviews | Isolated context → higher quality output |
 | Run `$verify` when adding new dependencies | 6-12 month training lag can mean deprecated APIs |
-| Define `$flow` for any sequence you repeat | Two repetitions = worth capturing as a flow |
+| Define `$flow` for any sequence you repeat | Two repetitions = worth capturing |
 | Name your `$build` increments | `$build auth module` scopes work better than bare `$build` |
-| Confirm compliance tier early | Tier 3 requires threat model before `$build` |
-| Use `$qa review` for architectural increments | Manual review catches systemic issues auto mode batches |
+| Confirm compliance tier early | Tier 3 requires §9 complete before `$build` |
+| Use `$qa review` for architectural increments | Manual review catches systemic issues |
 | Run `$qa full` before any PR | Cross-increment issues only surface in full audits |
 | Run `$doc arch` before client delivery | Saves hours — takes seconds from SPEC.md + code |
 | Commit SPEC.md, LESSON_LIBRARY.md, SKILL files | They are infrastructure, not documentation |
@@ -479,14 +437,18 @@ encryption, access control, data residency, tamper-evident audit trail.
 ## $SM — Socratic-Meta Prompting (Universal Shortcut)
 
 `$SM` works in any Claude session — web UI or Claude Code.
-Handles all prompt construction by auto-calibrating depth to what you need.
+Activates from User Preferences. Handles all prompt construction by auto-calibrating
+depth to what you need. Closes with a feedback loop for iteration.
 
 | Track | When | What you see |
 |-------|------|-------------|
 | Simple Track | Clear objective, direct request | ⚡ SIMPLE MODE: [one line] then the prompt |
 | Complex Track | Ambiguous objective, hidden assumptions | 📊 METHOD + 💡 Reason + 💡 Insight then the prompt |
 
+After delivering the prompt, always closes with:
+  "Does this capture your actual goal, or should I adjust the scope, role, or output format?"
+
 ---
 
-G7 AI Development Methodology | SDAD-CC Usage Guide & Shortcuts Reference | v3.0
+G7 AI Development Methodology | SDAD-CC Usage Guide & Shortcuts Reference | v3.1
 Spec-Driven AI Development for Claude Code

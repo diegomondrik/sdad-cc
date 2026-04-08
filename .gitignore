@@ -1,8 +1,0 @@
-# macOS
-.DS_Store
-
-# SDAD-CC temp files
-.sdad/agent_output.tmp
-
-# Node
-node_modules/

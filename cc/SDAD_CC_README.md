@@ -1,4 +1,4 @@
-# G7 SDAD-CC v3.0
+﻿# G7 SDAD-CC v3.1
 ## Spec-Driven AI Development for Claude Code
 
 SDAD-CC is a development methodology for teams using Claude Code as their primary
@@ -68,8 +68,10 @@ structure in your repo.
 
 ```bash
 npx ccstatusline@latest   # terminal 1 — shows model, context %, cost, git branch
-claude                       # terminal 2
+claude                    # terminal 2 — start Claude Code
 ```
+
+ccstatusline appears automatically in the status bar once installed.
 
 ---
 
@@ -78,10 +80,10 @@ claude                       # terminal 2
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Core instructions — Claude Code reads this automatically |
-| `SKILL_SDAD_METHODOLOGY.md` | Full phase logic, QA rules, compliance tiers |
-| `SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM integration patterns |
-| `SKILL_AI_ENGINEER.md` | Implementation quality, tooling, UI detection, docs |
-| `SKILL_COMPLIANCE.md` | 3-tier compliance system (Standard / Business / Enterprise) |
+| `SDAD_CORE_SKILL_METHODOLOGY.md` | Full phase logic, QA rules, compliance tiers |
+| `SDAD_CORE_SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM integration patterns |
+| `SDAD_CORE_SKILL_AI_ENGINEER.md` | Implementation quality, tooling, UI detection, docs |
+| `SDAD_CORE_SKILL_COMPLIANCE.md` | 3-tier compliance system (Standard / Business / Enterprise) |
 | `LESSON_LIBRARY.md` | Team knowledge file — grows automatically with use |
 
 Project initializer also creates:
@@ -139,13 +141,15 @@ context windows and do not consume the main session budget.
 | `$build [feature]` | Phase 3 — vertical increment with tests |
 | `$qa` | Phase 4 — auto QA, surfaces security for approval |
 | `$qa review` | Phase 4 — manual QA, per-finding approval |
+| `$qa full` | Full project audit in SDAD-Aware mode |
+| `$QA` | Full code audit from User Preferences (Standalone or SDAD-Aware) |
 | `$verify [lib]` | Check dependency documentation currency before coding |
 | `$agent review [module]` | Architectural review via isolated sub-agent |
 | `$agent test [module]` | Test suite generation via isolated sub-agent |
 | `$flow [name]` | Define a repeatable project-specific sequence |
 | `$doc` | Generate documentation from SPEC.md + codebase |
 | `$lesson` | View and manage the Lesson Library |
-| `$pause` | Show current state — Spec, git log, context budget, open findings |
+| `$pause` | Show current state — Spec, git log, context budget, findings, decisions |
 
 ---
 
@@ -159,11 +163,13 @@ Detected in Phase 0, confirmed in Phase 1:
 | Tier 2 — Business | SaaS, customer-facing products | Compliance Reviewer |
 | Tier 3 — Enterprise | Regulated environments, corporate IT | Compliance Reviewer (full) |
 
+Tier 3 requires SPEC.md §9 complete before `$build` is allowed.
+
 ---
 
 ## External Skills
 
-Install inside a Claude Code session for specialized capabilities:
+Install inside a Claude Code session:
 
 ```bash
 # Always relevant
@@ -199,9 +205,8 @@ npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill cont
 
 | File | Contents |
 |------|----------|
-| `SDAD_CC_INSTALL_GUIDE_v3_0.md` | Full installation guide including manual steps and antivirus notes |
-| `SDAD_CC_USAGE_AND_SHORTCUTS_v3_0.md` | All commands, phases, context budget, and best practices |
-| `SDAD_CC_TRAINING_AND_PODCAST_v3_0.md` | Training material + NotebookLM prompts |
+| `SDAD_CC_INSTALL_GUIDE.md` | Full installation guide including manual steps and antivirus notes |
+| `SDAD_CC_USAGE_AND_SHORTCUTS.md` | All commands, phases, context budget, and best practices |
 
 ---
 
@@ -214,35 +219,33 @@ sdad-cc/
 ├── project-init.sh                       # Mac/Linux project initializer
 ├── project-init.ps1                      # Windows project initializer
 ├── README.md                             # This file
-└── kit/                                  # SDAD-CC v3.0 files
-    ├── SDAD_CC_CLAUDE_MD_v3_0.md
-    ├── SDAD_CC_SKILL_SDAD_METHODOLOGY_v3_0.md
-    ├── SDAD_CC_SKILL_AI_ARCHITECT_v3_0.md
-    ├── SDAD_CC_SKILL_AI_ENGINEER_v3_0.md
-    ├── SDAD_CC_SKILL_COMPLIANCE_v3_0.md
-    ├── SDAD_CC_LESSON_LIBRARY_v3_0.md
-    ├── SDAD_CC_INSTALL_GUIDE_v3_0.md
-    ├── SDAD_CC_USAGE_AND_SHORTCUTS_v3_0.md
-    └── SDAD_CC_TRAINING_AND_PODCAST_v3_0.md
+└── kit/                                  # SDAD-CC v3.1 files
+    ├── SDAD_CC_CLAUDE_MD.md
+    ├── SDAD_CORE_SKILL_METHODOLOGY.md
+    ├── SDAD_CORE_SDAD_CORE_SKILL_AI_ARCHITECT.md
+    ├── SDAD_CORE_SDAD_CORE_SKILL_AI_ENGINEER.md
+    ├── SDAD_CORE_SDAD_CORE_SKILL_COMPLIANCE.md
+    ├── SDAD_LESSON_LIBRARY.md
+    ├── SDAD_CC_INSTALL_GUIDE.md
+    └── SDAD_CC_USAGE_AND_SHORTCUTS.md
 ```
 
 ---
 
 ## Verification
 
-After installing, run `npx ccstatusline@latest` in one terminal, start `claude`
-in another, then verify inside Claude Code:
+After installing, start `claude` and verify:
 
 | Command | Expected |
 |---------|----------|
 | `$sdad` | All 5 phases + active skills |
 | `$skills` | 4 skills active by default |
 | `$spec` | First requirements question with proposed default |
-| `$pause` | Session state including Context Budget status |
+| `$pause` | Session state including Context Budget status and Decisions log |
 | `$SM hello` | ⚡ SIMPLE MODE response |
 
 ---
 
 ## License
 
-G7 AI Development Methodology — v3.0
+G7 AI Development Methodology — v3.1

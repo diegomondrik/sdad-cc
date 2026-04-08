@@ -1,6 +1,6 @@
-# G7 SDAD-CC — Installation & Setup Guide
+﻿# G7 SDAD-CC — Installation & Setup Guide
 # Spec-Driven AI Development for Claude Code
-# Version 3.0 | 2026
+# Version 3.1 | 2026
 
 ---
 
@@ -8,17 +8,17 @@
 
 SDAD-CC is the Claude Code edition of the G7 Spec-Driven AI Development methodology.
 It is designed for developers who use Claude Code (the CLI agent) as their primary
-AI development tool. Unlike the web UI version (v1.3), SDAD-CC eliminates all
-copy/paste rituals by leveraging Claude Code's direct filesystem and terminal access.
+AI development tool. Unlike the web UI version, SDAD-CC eliminates all copy/paste
+rituals by leveraging Claude Code's direct filesystem and terminal access.
 
-If you are using Claude on the web UI (claude.ai), use SDAD v1.3 instead.
+If you are using Claude on the web UI (claude.ai), use SDAD Web instead.
 Both kits are maintained in parallel — they share the same methodology core.
 
 ---
 
 ## Two Installers
 
-SDAD-CC v3.0 ships with two separate installers:
+SDAD-CC v3.1 ships with two separate installers:
 
 | Installer | Purpose | When to run |
 |-----------|---------|-------------|
@@ -34,15 +34,11 @@ installed, it runs the methodology installer first.
 
 ### Mac / Linux
 
-Run from inside your project folder:
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
-
-**Important — two safe options to avoid Execution Policy blocks:**
 
 **Option A — paste directly (recommended):**
 ```powershell
@@ -127,7 +123,7 @@ The installer handles these automatically, but for reference:
 | Claude Code CLI | The AI agent | `claude --version` |
 | Claude Pro / Max / Team / Enterprise | Required to use Claude Code | claude.ai account |
 | git initialized | SDAD-CC files versioned with your code | `git status` |
-| ccstatusline | Context budget monitor | `npx ccstatusline@latest` |
+| ccstatusline | Context budget monitor | `npm install -g ccstatusline` |
 
 ---
 
@@ -138,13 +134,13 @@ These files are installed into your repo root by the methodology installer:
 | File installed as | Purpose |
 |------------------|---------|
 | `CLAUDE.md` | Core instructions — Claude reads this automatically |
-| `SKILL_SDAD_METHODOLOGY.md` | Full phase logic and QA rules |
-| `SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM patterns |
-| `SKILL_AI_ENGINEER.md` | Implementation quality, UI detection, docs |
-| `SKILL_COMPLIANCE.md` | 3-tier compliance system |
+| `SDAD_CORE_SKILL_METHODOLOGY.md` | Full phase logic and QA rules |
+| `SDAD_CORE_SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM patterns |
+| `SDAD_CORE_SKILL_AI_ENGINEER.md` | Implementation quality, UI detection, docs |
+| `SDAD_CORE_SKILL_COMPLIANCE.md` | 3-tier compliance system |
 | `LESSON_LIBRARY.md` | Team knowledge file — grows over time |
 
-Human reference files (Install Guide, Usage Guide, Training doc) do not go into
+Human reference files (Install Guide, Usage Guide) do not go into
 the repo — keep them in your shared drive or team wiki.
 
 ---
@@ -167,7 +163,10 @@ If not in a git repo: `git init`
 
 ```bash
 npm install -g ccstatusline
+npx ccstatusline@latest   # opens configuration TUI — run once
 ```
+
+After this ccstatusline appears automatically in every Claude Code session.
 
 ### Step 3 — Copy files to repo root
 
@@ -175,18 +174,18 @@ Download the kit files from https://github.com/diegomondrik/sdad-cc/tree/main/ki
 and copy them with the correct names:
 
 ```bash
-cp SDAD_CC_CLAUDE_MD_v3_0.md              CLAUDE.md
-cp SDAD_CC_SKILL_SDAD_METHODOLOGY_v3_0.md SKILL_SDAD_METHODOLOGY.md
-cp SDAD_CC_SKILL_AI_ARCHITECT_v3_0.md     SKILL_AI_ARCHITECT.md
-cp SDAD_CC_SKILL_AI_ENGINEER_v3_0.md      SKILL_AI_ENGINEER.md
-cp SDAD_CC_SKILL_COMPLIANCE_v3_0.md       SKILL_COMPLIANCE.md
-cp SDAD_CC_LESSON_LIBRARY_v3_0.md         LESSON_LIBRARY.md
+cp SDAD_CC_CLAUDE_MD.md              CLAUDE.md
+cp SDAD_CORE_SKILL_METHODOLOGY.md SDAD_CORE_SKILL_METHODOLOGY.md
+cp SDAD_CORE_SDAD_CORE_SKILL_AI_ARCHITECT.md     SDAD_CORE_SKILL_AI_ARCHITECT.md
+cp SDAD_CORE_SDAD_CORE_SKILL_AI_ENGINEER.md      SDAD_CORE_SKILL_AI_ENGINEER.md
+cp SDAD_CORE_SDAD_CORE_SKILL_COMPLIANCE.md       SDAD_CORE_SKILL_COMPLIANCE.md
+cp SDAD_LESSON_LIBRARY.md         LESSON_LIBRARY.md
 ```
 
 If your repo already has a CLAUDE.md, append instead of replacing:
 ```bash
 echo "" >> CLAUDE.md
-cat SDAD_CC_CLAUDE_MD_v3_0.md >> CLAUDE.md
+cat SDAD_CC_CLAUDE_MD.md >> CLAUDE.md
 ```
 
 ### Step 4 — Create .sdad/ structure
@@ -205,7 +204,7 @@ This step is done once per Claude account.
 1. Go to: https://claude.ai/settings/profile
 2. Scroll to "Preferences"
 3. Copy the entire content of `SDAD_USER_PREFERENCES_SNIPPET.md`
-4. Paste into the Preferences field
+4. Paste into the Preferences field (append — do not replace existing content)
 5. Save
 
 ### Step 6 — Initialize your project
@@ -230,8 +229,8 @@ Navigate to your repo and start Claude Code:
 
 ```bash
 cd /path/to/your/repo
-npx ccstatusline@latest   # in one terminal
-claude                       # in another terminal
+npx ccstatusline@latest   # terminal 1
+claude                    # terminal 2
 ```
 
 Run these checks inside the Claude Code session:
@@ -241,15 +240,13 @@ Run these checks inside the Claude Code session:
 | `$sdad` | All 5 phases visible. Active skills listed. |
 | `$skills` | 4 skills active, Compliance Reviewer listed as auto-activates on Tier 2/3 |
 | `$spec` | First requirements question with a proposed default |
-| `$pause` | Session state including Context Budget status |
+| `$pause` | Session state including Context Budget status and Decisions log |
 | `$lesson` | "No entries yet" message |
 | `$SM hello` | ⚡ SIMPLE MODE — prompt returned immediately |
 
 ---
 
 ## External Skills (optional — install inside Claude Code)
-
-Run these commands inside a running `claude` session:
 
 ```bash
 # Always relevant — frontend design, skill creator, MCP builder
@@ -294,32 +291,30 @@ Most robust for teams with active lesson accumulation.
 
 ---
 
-## Upgrading from SDAD-CC v2.0
+## Upgrading from SDAD-CC v3.0
 
 Run the methodology installer in the repo root — it detects existing files:
 - `CLAUDE.md`: appends new content (with your approval)
 - `LESSON_LIBRARY.md`: preserves if it has entries
-- `SKILL` files: replaces with v3.0 versions
-- `.sdad/`: creates if missing, preserves if already exists
+- `SKILL` files: replaces with v3.1 versions
+- `.sdad/`: preserves if already exists
 
-Then run the project initializer for each active project:
-- `SPEC.md`: preserved if exists
-- `.sdad/project.md`: created if missing
-
-Key changes from v2.0 to v3.0:
-- Context Budget monitoring (50% / 65% thresholds) added to all sessions
-- `ccstatusline` is now a required install, not optional
-- Sub-agent delegation via `$agent` (automatic — no developer action required)
-- New commands: `$verify`, `$flow`
-- `$pause` now includes Context Budget status and flows count
-- `.sdad/` directory structure required for flows and agent temp files
+Key changes from v3.0 to v3.1:
+- WHEN guardrails added to $build (SPEC.md missing, no test command)
+- Sub-agent failure handling specified
+- QA finding numbering now reads prior session numbers from DECISIONS.md
+- $QA now has 6 layers — Documentation layer added (was 5 in v3.0)
+- $SM now includes Phase 6 feedback loop
+- External Skills and Complementary Tools moved to comment blocks (token savings)
+- Behavior Rules deduplicated — ~12 redundant rules removed
+- User Preferences Snippet updated to v3.1 — update Settings → Profile → Preferences
 
 ---
 
-## Upgrading from SDAD v1.3 (Web UI)
+## Upgrading from SDAD Web to SDAD-CC
 
-SDAD-CC v3.0 is a parallel kit — it does not replace v1.3. Keep both.
-Use v1.3 for web UI conversations, v3.0 for Claude Code sessions.
+SDAD-CC is a parallel kit — keep both if you switch contexts.
+Use SDAD Web for browser-only sessions, SDAD-CC for Claude Code sessions.
 
 To migrate an existing project:
 1. Run the methodology installer in the project's repo root
@@ -327,7 +322,7 @@ To migrate an existing project:
 3. Start a Claude Code session — Phase 0 detects SPEC.md and restores state
 4. Run `$pause` to confirm state was loaded correctly
 
-Existing Lesson Libraries from v1.3 are fully compatible.
+Existing Lesson Libraries are fully compatible.
 
 ---
 
@@ -337,12 +332,11 @@ For teams using the Anthropic API directly, paste CLAUDE.md content as the
 system prompt. Store as a versioned config file in your repo.
 
 ```javascript
-// system_prompt.js
 const fs = require('fs');
 const SDAD_SYSTEM = fs.readFileSync('./CLAUDE.md', 'utf-8');
 
 const response = await anthropic.messages.create({
-  model: 'claude-sonnet-4-20250514',
+  model: 'claude-sonnet-4-6',
   system: SDAD_SYSTEM,
   messages: [{ role: 'user', content: userMessage }]
 });
@@ -355,13 +349,10 @@ Treat CLAUDE.md as infrastructure code. Version it in Git alongside your codebas
 ## Troubleshooting
 
 **PowerShell blocks script execution**
-→ Use Option A or B from the Windows install section above — do not use `irm | iex`
-→ Option B lets you inspect the script before running it if your security policy requires it
+→ Use Option A or B from the Windows install section — do not use `irm | iex`
 
 **Antivirus blocks npm or the download**
-→ The installer avoids download+execute in a single step for this reason
-→ If the antivirus still blocks: download each kit file manually from
-  https://github.com/diegomondrik/sdad-cc/tree/main/kit and copy per the manual steps
+→ Download each kit file manually from https://github.com/diegomondrik/sdad-cc/tree/main/kit
 
 **"$sdad not recognized" after installation**
 → Verify CLAUDE.md is in the repo root (not in a subfolder)
@@ -369,27 +360,24 @@ Treat CLAUDE.md as infrastructure code. Version it in Git alongside your codebas
 
 **Installer fails to download files**
 → Check internet connection
-→ Verify the diegomondrik/sdad-cc repo is public
 → Use manual installation steps above
 
 **Node.js installed but not found after installer runs**
-→ Restart your terminal / PowerShell session
-→ Re-run the installer — it will detect Node.js correctly after restart
+→ Restart your terminal / PowerShell session and re-run the installer
 
 **Claude Code installed but `claude` command not found**
 → Run: `npm install -g @anthropic-ai/claude-code`
 → On Mac/Linux: check that npm global bin is in your PATH
-→ On Windows: restart PowerShell after installation
 
 **ccstatusline not showing**
-→ Make sure you run `npx ccstatusline@latest` before starting `claude`, not after
-→ It must run in a separate terminal from the one running Claude Code
+→ Verify: `npm list -g ccstatusline`
+→ Run config TUI once: `npx ccstatusline@latest`
+→ Restart Claude Code after installation
 
 **$build blocked after 65% context warning**
-→ This is expected behavior — run `$pause`, note your state, start a new session
-→ All SDAD commands except $build remain available to wrap up cleanly
+→ Expected behavior — run `$pause`, note your state, start a new session
 
 ---
 
-G7 AI Development Methodology | SDAD-CC Installation Guide | v3.0
+G7 AI Development Methodology | SDAD-CC Installation Guide | v3.1
 Spec-Driven AI Development for Claude Code
