@@ -1,4 +1,4 @@
-﻿# G7 SDAD-CC v3.1
+# G7 SDAD-CC v3.1
 ## Spec-Driven AI Development for Claude Code
 
 SDAD-CC is a development methodology for teams using Claude Code as their primary
@@ -80,10 +80,10 @@ ccstatusline appears automatically in the status bar once installed.
 | File | Purpose |
 |------|---------|
 | `CLAUDE.md` | Core instructions — Claude Code reads this automatically |
-| `SDAD_CORE_SKILL_METHODOLOGY.md` | Full phase logic, QA rules, compliance tiers |
-| `SDAD_CORE_SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM integration patterns |
-| `SDAD_CORE_SKILL_AI_ENGINEER.md` | Implementation quality, tooling, UI detection, docs |
-| `SDAD_CORE_SKILL_COMPLIANCE.md` | 3-tier compliance system (Standard / Business / Enterprise) |
+| `SKILL_SDAD_METHODOLOGY.md` | Full phase logic, QA rules, compliance tiers |
+| `SKILL_AI_ARCHITECT.md` | Architecture decisions, LLM integration patterns |
+| `SKILL_AI_ENGINEER.md` | Implementation quality, tooling, UI detection, docs |
+| `SKILL_COMPLIANCE.md` | 3-tier compliance system (Standard / Business / Enterprise) |
 | `LESSON_LIBRARY.md` | Team knowledge file — grows automatically with use |
 
 Project initializer also creates:
@@ -91,6 +91,7 @@ Project initializer also creates:
 | File / Folder | Purpose |
 |--------------|---------|
 | `SPEC.md` | Initialized with project metadata — populated by `$specout` |
+| `DECISIONS.md` | Architectural decision log — written automatically by `$build` |
 | `.sdad/project.md` | Project registry and session log |
 | `.sdad/flows/` | Project-specific repeatable command sequences |
 
@@ -205,8 +206,8 @@ npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill cont
 
 | File | Contents |
 |------|----------|
-| `SDAD_CC_INSTALL_GUIDE.md` | Full installation guide including manual steps and antivirus notes |
-| `SDAD_CC_USAGE_AND_SHORTCUTS.md` | All commands, phases, context budget, and best practices |
+| `cc/SDAD_CC_INSTALL_GUIDE.md` | Full installation guide including manual steps and antivirus notes |
+| `cc/SDAD_CC_USAGE_AND_SHORTCUTS.md` | All commands, phases, context budget, and best practices |
 
 ---
 
@@ -214,20 +215,35 @@ npx skills add https://github.com/deanpeters/Product-Manager-Skills --skill cont
 
 ```
 sdad-cc/
-├── install.sh                            # Mac/Linux methodology installer
-├── install.ps1                           # Windows methodology installer
-├── project-init.sh                       # Mac/Linux project initializer
-├── project-init.ps1                      # Windows project initializer
-├── README.md                             # This file
-└── kit/                                  # SDAD-CC v3.1 files
-    ├── SDAD_CC_CLAUDE_MD.md
-    ├── SDAD_CORE_SKILL_METHODOLOGY.md
-    ├── SDAD_CORE_SDAD_CORE_SKILL_AI_ARCHITECT.md
-    ├── SDAD_CORE_SDAD_CORE_SKILL_AI_ENGINEER.md
-    ├── SDAD_CORE_SDAD_CORE_SKILL_COMPLIANCE.md
-    ├── SDAD_LESSON_LIBRARY.md
-    ├── SDAD_CC_INSTALL_GUIDE.md
-    └── SDAD_CC_USAGE_AND_SHORTCUTS.md
+├── install.sh                         # Mac/Linux methodology installer
+├── install.ps1                        # Windows methodology installer
+├── project-init.sh                    # Mac/Linux project initializer
+├── project-init.ps1                   # Windows project initializer
+├── README.md                          # This file
+├── SDAD_FILE_INVENTORY.md             # Full file inventory by variant
+├── core/                              # Platform-agnostic (skills + lesson library)
+│   ├── SDAD_CORE_SKILL_METHODOLOGY.md
+│   ├── SDAD_CORE_SKILL_AI_ARCHITECT.md
+│   ├── SDAD_CORE_SKILL_AI_ENGINEER.md
+│   ├── SDAD_CORE_SKILL_COMPLIANCE.md
+│   └── SDAD_LESSON_LIBRARY.md
+├── cc/                                # Claude Code specific
+│   ├── SDAD_CC_CLAUDE_MD.md           # Installed as CLAUDE.md
+│   ├── SDAD_CC_INSTALL_GUIDE.md
+│   ├── SDAD_CC_USAGE_AND_SHORTCUTS.md
+│   └── SDAD_CC_Developer_Guide.docx
+├── web/                               # Web UI specific
+│   ├── SDAD_WEB_PROJECT_INSTRUCTIONS.md
+│   ├── SDAD_WEB_SHORTCUTS.md
+│   ├── SDAD_WEB_INSTALL_GUIDE.md
+│   └── SDAD_WEB_Developer_Guide.docx
+├── diego/                             # Diego personal edition
+│   ├── SDAD_DIEGO_CLAUDE_MD.md
+│   ├── SDAD_DIEGO_SKILL.md
+│   ├── SDAD_DIEGO_PROJECT_INSTRUCTIONS.md
+│   └── SDAD_DIEGO_INSTALL_GUIDE.md
+└── shared/                            # Cross-platform
+    └── SDAD_USER_PREFERENCES_SNIPPET.md
 ```
 
 ---
