@@ -112,9 +112,46 @@ After every `$close`, re-upload the changed files to the Claude project:
 - [ ] `infra_QBO_AUTH.md` — if QBO was used and new lessons were learned
 - [ ] `automatizaciones_registry.md` — always (new entry added)
 - [ ] `LESSON_LIBRARY_DIEGO.md` — if new lessons were approved
+- [ ] `LESSON_LIBRARY_MASTER.md` — after sdad_sync.py runs (Step 6 of $close)
 
 > When starting a new project: always pull the latest infra docs from your machine,
 > not from a previous Claude project. Your machine is the source of truth.
+
+---
+
+## Setup de sdad-knowledge (una sola vez)
+
+`sdad-knowledge` es el repo central de memoria cross-proyecto del kit SDAD-Diego v3.2.
+Guarda las lecciones aprendidas de todos tus proyectos y los templates actualizados.
+
+### Prerequisito
+Tener `GITHUB_PAT` cargado en Windows Credential Manager vía `secrets_manager.py`:
+1. Ejecutá `python infra\secrets_manager.py`
+2. Opción 3 — Agregar secret
+3. Clave: `GITHUB_PAT` | Valor: tu Personal Access Token de GitHub
+   (el PAT necesita scope `repo` — github.com → Settings → Developer settings → Tokens)
+
+### Paso a paso
+
+```powershell
+# 1. Clonar el repo (si no lo tenés aún)
+cd "C:\Users\diego\Documents\Cowork\05_Proyectos\SDAD Methodology"
+
+# 2. Correr el setup (SOLO UNA VEZ — aborta si el repo ya existe)
+python "sdad-knowledge\scripts\sdad_setup.py"
+```
+
+El script:
+- Crea el repo privado `sdad-knowledge` en tu GitHub
+- Sube los templates actuales del kit
+- Registra la automatización en `automatizaciones_registry.md`
+- Muestra el checklist de acciones manuales restantes
+
+### Verificar
+```powershell
+python "sdad-knowledge\scripts\sdad_new.py" "Test Proyecto"
+```
+Si ves el checklist de Claude Project Knowledge, el setup está completo.
 
 ---
 
@@ -161,6 +198,7 @@ Key changes in v3.1:
 | `infra_SECRETS.md` | ✅ Always | Current version from machine |
 | `automatizaciones_registry.md` | ✅ Always | Current version from machine |
 | `LESSON_LIBRARY_DIEGO.md` | ✅ Always | Current version, not blank |
+| `LESSON_LIBRARY_MASTER.md` | ✅ Always (v3.2+) | From sdad-knowledge repo — cross-project lessons |
 | `infra_PYTHON_LOCAL.md` | If Python | Most projects |
 | `infra_QBO_AUTH.md` | If QBO | QBO-related projects |
 | `infra_XXXXX.md` | If new integration | Create during project, upload when ready |

@@ -161,6 +161,11 @@ Phase 0 output:
   - System objective / Users / Inferred tech stack / Critical ambiguities
   - Recommended AI Skills / Recommended compliance tier
 
+  Relevant lessons from LESSON_LIBRARY_MASTER.md (cross-project):
+  [L-XX] [title] — [why this applies to this project]
+  (Search both LESSON_LIBRARY_MASTER.md and local LESSON_LIBRARY.md if present.
+   Flag source: "master" or "local". Surface at most 3 most relevant entries.)
+
 Phase 0.5 output (immediately after, always silent):
   INFRA DECLARATION
   Stack detected:       [inferred from infra docs in filesystem]
@@ -331,12 +336,21 @@ STEP 5 — Lesson Library
   Propose up to 2 lesson candidates (most valuable only).
   If approved: write to LESSON_LIBRARY.md in project root.
 
-STEP 6 — Close summary
+STEP 6 — Master Lesson Sync
+  If any lessons were approved in Step 5:
+  Run sdad_sync.py to push them to the cross-project master library:
+    python C:\Users\diego\Documents\Cowork\05_Proyectos\SDAD Methodology\sdad-knowledge\scripts\sdad_sync.py "[project name]"
+  Pipe the approved lesson blocks as input.
+  Confirm: "N lesson(s) synced to LESSON_LIBRARY_MASTER.md — push OK"
+  If sdad_sync.py is not found: warn Diego and skip — do not fail $close.
+
+STEP 7 — Close summary
   PROJECT CLOSE — [project name] — [date]
   Files updated directly on filesystem:
     - [file] → [full path]
   New secrets added to secrets_manager.py: [list or "none"]
   Lessons captured: [count or "none"]
+  Lessons synced to master: [count or "none — sdad_sync not available"]
   Git status: [uncommitted changes — remind to commit]
 
 **$infra** — Show current infra state by reading filesystem directly.
