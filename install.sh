@@ -66,7 +66,7 @@ echo "  ✓ ccstatusline installed"
 echo ""
 echo "  📋 Run the configuration TUI once to set up your status line:"
 echo "     npx ccstatusline@latest"
-echo "  After that it appears automatically in every Claude Code session.""
+echo "  After that it appears automatically in every Claude Code session."
 
 # ─── STEP 4: git ────────────────────────────────────────────────────────────
 echo "▶ Checking git..."
@@ -79,13 +79,14 @@ else
 fi
 
 # ─── STEP 5: Download SDAD-CC files ─────────────────────────────────────────
+GITHUB_REPO="https://raw.githubusercontent.com/diegomondrik/sdad-cc/main"
 echo "▶ Downloading SDAD-CC v3.1 files..."
 
 download_file() {
-  local remote="$1"
-  local local_name="$2"
-  curl -fsSL "$REPO/$remote" -o "$local_name"
-  echo "  ✓ $local_name"
+  local remote_path="$1"
+  local dest="$2"
+  curl -fsSL "$GITHUB_REPO/$remote_path" -o "$dest"
+  echo "  ✓ $dest"
 }
 
 # CLAUDE.md — append if exists, create if not
@@ -95,25 +96,37 @@ if [ -f "CLAUDE.md" ]; then
   else
     echo "  CLAUDE.md exists (non-SDAD). Appending SDAD-CC content..."
     echo "" >> CLAUDE.md
-    curl -fsSL "$REPO/SDAD_CC_CLAUDE_MD.md" >> CLAUDE.md
+    curl -fsSL "$GITHUB_REPO/cc/SDAD_CC_CLAUDE_MD.md" >> CLAUDE.md
     echo "  ✓ CLAUDE.md updated"
   fi
 else
-  download_file "SDAD_CC_CLAUDE_MD.md" "CLAUDE.md"
+  download_file "cc/SDAD_CC_CLAUDE_MD.md" "CLAUDE.md"
 fi
 
 # Skill files — always replace with latest version
-download_file "SDAD_CORE_SKILL_METHODOLOGY.md" "SDAD_CORE_SKILL_METHODOLOGY.md"
-download_file "SDAD_CORE_SDAD_CORE_SKILL_AI_ARCHITECT.md"     "SDAD_CORE_SKILL_AI_ARCHITECT.md"
-download_file "SDAD_CORE_SDAD_CORE_SKILL_AI_ENGINEER.md"      "SDAD_CORE_SKILL_AI_ENGINEER.md"
-download_file "SDAD_CORE_SDAD_CORE_SKILL_COMPLIANCE.md"       "SDAD_CORE_SKILL_COMPLIANCE.md"
+download_file "core/SDAD_CORE_SKILL_METHODOLOGY.md" "SDAD_CORE_SKILL_METHODOLOGY.md"
+download_file "core/SDAD_CORE_SKILL_AI_ARCHITECT.md" "SDAD_CORE_SKILL_AI_ARCHITECT.md"
+download_file "core/SDAD_CORE_SKILL_AI_ENGINEER.md"  "SDAD_CORE_SKILL_AI_ENGINEER.md"
+download_file "core/SDAD_CORE_SKILL_COMPLIANCE.md"   "SDAD_CORE_SKILL_COMPLIANCE.md"
 
 # LESSON_LIBRARY.md — preserve if it has content
 if [ -f "LESSON_LIBRARY.md" ] && [ "$(wc -l < LESSON_LIBRARY.md)" -gt 5 ]; then
   echo "  ℹ️  LESSON_LIBRARY.md has entries — preserved."
 else
-  download_file "SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
+  download_file "core/SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
 fi
+
+# ─── LOCAL INSTALL (for development use only) ─────────────────────────────────
+# If running the script directly from the cloned repo, you can copy files locally
+# instead of downloading. Uncomment the block below and comment out Step 5 above.
+#
+# SDAD_REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# cp "$SDAD_REPO_DIR/cc/SDAD_CC_CLAUDE_MD.md"          CLAUDE.md
+# cp "$SDAD_REPO_DIR/core/SDAD_CORE_SKILL_METHODOLOGY.md" SDAD_CORE_SKILL_METHODOLOGY.md
+# cp "$SDAD_REPO_DIR/core/SDAD_CORE_SKILL_AI_ARCHITECT.md" SDAD_CORE_SKILL_AI_ARCHITECT.md
+# cp "$SDAD_REPO_DIR/core/SDAD_CORE_SKILL_AI_ENGINEER.md"  SDAD_CORE_SKILL_AI_ENGINEER.md
+# cp "$SDAD_REPO_DIR/core/SDAD_CORE_SKILL_COMPLIANCE.md"   SDAD_CORE_SKILL_COMPLIANCE.md
+# cp "$SDAD_REPO_DIR/core/SDAD_LESSON_LIBRARY.md"          LESSON_LIBRARY.md
 
 # ─── STEP 6: Create .sdad/ structure ────────────────────────────────────────
 echo "▶ Creating .sdad/ directory structure..."
