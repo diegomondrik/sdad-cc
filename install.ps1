@@ -7,7 +7,7 @@
 #   powershell -ExecutionPolicy Bypass -File ".\install-sdad.ps1"
 
 $ErrorActionPreference = "Stop"
-$REPO = "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main/kit"
+$REPO = "https://raw.githubusercontent.com/diegomondrik/sdad-cc/main"
 $SDAD_MARKER = "G7 SDAD-CC"
 
 function Show-Header {
@@ -123,12 +123,12 @@ if (Test-Path "CLAUDE.md") {
         Show-Info "CLAUDE.md already contains SDAD-CC. Skipping."
     } else {
         Show-Info "CLAUDE.md exists (non-SDAD). Appending SDAD-CC content..."
-        $sdadContent = (Invoke-WebRequest -Uri "$REPO/SDAD_CC_CLAUDE_MD.md" -UseBasicParsing).Content
+        $sdadContent = (Invoke-WebRequest -Uri "$REPO/cc/SDAD_CC_CLAUDE_MD.md" -UseBasicParsing).Content
         Add-Content -Path "CLAUDE.md" -Value "`n$sdadContent"
         Show-OK "CLAUDE.md updated"
     }
 } else {
-    Get-KitFile "SDAD_CC_CLAUDE_MD.md" "CLAUDE.md"
+    Get-KitFile "cc/SDAD_CC_CLAUDE_MD.md" "CLAUDE.md"
 }
 
 if (Test-Path "LESSON_LIBRARY.md") {
@@ -136,17 +136,17 @@ if (Test-Path "LESSON_LIBRARY.md") {
     if ($lineCount -gt 5) {
         Show-Info "LESSON_LIBRARY.md has entries - preserved."
     } else {
-        Get-KitFile "SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
+        Get-KitFile "core/SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
     }
 } else {
-    Get-KitFile "SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
+    Get-KitFile "core/SDAD_LESSON_LIBRARY.md" "LESSON_LIBRARY.md"
 }
 
 # Skill files — always replace with latest version
-Get-KitFile "SDAD_CORE_SKILL_METHODOLOGY.md" "SDAD_CORE_SKILL_METHODOLOGY.md"
-Get-KitFile "SDAD_CORE_SDAD_CORE_SKILL_AI_ARCHITECT.md"     "SDAD_CORE_SKILL_AI_ARCHITECT.md"
-Get-KitFile "SDAD_CORE_SDAD_CORE_SKILL_AI_ENGINEER.md"      "SDAD_CORE_SKILL_AI_ENGINEER.md"
-Get-KitFile "SDAD_CORE_SDAD_CORE_SKILL_COMPLIANCE.md"       "SDAD_CORE_SKILL_COMPLIANCE.md"
+Get-KitFile "core/SDAD_CORE_SKILL_METHODOLOGY.md" "SDAD_CORE_SKILL_METHODOLOGY.md"
+Get-KitFile "core/SDAD_CORE_SKILL_AI_ARCHITECT.md" "SDAD_CORE_SKILL_AI_ARCHITECT.md"
+Get-KitFile "core/SDAD_CORE_SKILL_AI_ENGINEER.md"  "SDAD_CORE_SKILL_AI_ENGINEER.md"
+Get-KitFile "core/SDAD_CORE_SKILL_COMPLIANCE.md"   "SDAD_CORE_SKILL_COMPLIANCE.md"
 
 # STEP 6 - Create .sdad/ structure
 Show-Step "Creating .sdad/ directory structure..."
